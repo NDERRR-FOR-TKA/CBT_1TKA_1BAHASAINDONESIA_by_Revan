@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CBT TKA Bahasa Indonesia SMP</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy:#0d1b3e; --navy2:#162552; --emerald:#059669; --emerald2:#10b981;
+    --amber:#d97706; --amber2:#f59e0b; --red:#ef4444; --blue:#2563eb;
+    --bg:#f0fdf4; --card:#fff; --text:#1e293b; --muted:#64748b;
+    --border:#e2e8f0; --radius:14px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+
+  /* HEADER */
+  .header{background:linear-gradient(135deg,#064e3b 0%,#065f46 60%,#047857 100%);color:white;position:sticky;top:0;z-index:100;box-shadow:0 4px 20px rgba(6,78,59,.4);}
+  .header-inner{max-width:960px;margin:0 auto;padding:14px 20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
+  .header-badge{background:var(--amber2);color:#1a1a1a;font-weight:800;font-size:11px;padding:3px 10px;border-radius:20px;letter-spacing:.5px;text-transform:uppercase;}
+  .header h1{font-size:16px;font-weight:700;flex:1;}
+  .header h1 span{color:var(--amber2);}
+  #timer{font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:600;background:rgba(255,255,255,.12);padding:6px 14px;border-radius:8px;color:#fff;letter-spacing:1px;border:1px solid rgba(255,255,255,.2);transition:background .3s;}
+  #timer.urgent{background:rgba(239,68,68,.4);animation:pulse .8s infinite;}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.7}}
+
+  .progress-wrap{background:#064e3b;padding:0 20px 10px;}
+  .progress-inner{max-width:960px;margin:0 auto;}
+  .progress-info{display:flex;justify-content:space-between;font-size:11px;color:rgba(255,255,255,.6);margin-bottom:5px;}
+  .progress-bar{height:5px;background:rgba(255,255,255,.15);border-radius:99px;overflow:hidden;}
+  .progress-fill{height:100%;background:linear-gradient(90deg,var(--amber),var(--amber2));border-radius:99px;transition:width .4s ease;}
+
+  /* MAIN */
+  .main{max-width:960px;margin:0 auto;padding:24px 16px;display:grid;grid-template-columns:1fr;gap:20px;}
+
+  /* NAVIGATOR */
+  .nav-card{background:var(--card);border-radius:var(--radius);padding:16px;box-shadow:0 2px 12px rgba(0,0,0,.06);}
+  .nav-title{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;margin-bottom:10px;}
+  .nav-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(34px,1fr));gap:5px;}
+  .nav-btn{aspect-ratio:1;border:2px solid var(--border);background:white;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .18s;color:var(--muted);display:flex;align-items:center;justify-content:center;}
+  .nav-btn:hover{border-color:var(--emerald2);color:var(--emerald);}
+  .nav-btn.answered{background:var(--navy);border-color:var(--navy);color:white;}
+  .nav-btn.active{background:var(--emerald);border-color:var(--emerald);color:white;transform:scale(1.12);}
+  .nav-btn.pgk{border-style:dashed;}
+  .nav-btn.bs-type{border-radius:50%;}
+  .legend{display:flex;gap:10px;margin-top:10px;flex-wrap:wrap;}
+  .legend-item{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--muted);}
+  .legend-dot{width:12px;height:12px;border-radius:3px;border:2px solid;}
+
+  /* SOAL CARD */
+  .soal-card{background:var(--card);border-radius:var(--radius);padding:28px;box-shadow:0 2px 16px rgba(0,0,0,.07);animation:fadeIn .25s ease;}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+  .soal-meta{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap;}
+  .soal-num{background:var(--navy);color:white;font-size:13px;font-weight:800;padding:4px 14px;border-radius:8px;}
+  .tipe-badge{font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;text-transform:uppercase;letter-spacing:.4px;}
+  .tipe-pg{background:#dbeafe;color:#1d4ed8;}
+  .tipe-pgk{background:#fef3c7;color:#b45309;}
+  .tipe-bs{background:#d1fae5;color:#065f46;}
+  .tipe-ss{background:#ede9fe;color:#5b21b6;}
+
+  /* TEKS BACAAN */
+  .teks-box{background:#f8fff8;border:1px solid #bbf7d0;border-radius:10px;padding:16px 18px;margin-bottom:16px;font-size:13.5px;line-height:1.8;color:var(--text);}
+  .teks-title{font-weight:800;font-size:14px;color:var(--navy);margin-bottom:8px;text-align:center;}
+  .teks-sub{font-size:11px;color:var(--muted);text-align:center;margin-bottom:10px;}
+  .teks-label{font-size:10px;font-weight:700;color:var(--emerald);letter-spacing:.5px;text-transform:uppercase;background:#dcfce7;padding:2px 8px;border-radius:4px;display:inline-block;margin-bottom:8px;}
+
+  .instruksi{font-size:12.5px;color:#dc2626;font-weight:600;font-style:italic;margin-bottom:12px;padding:6px 12px;background:#fff1f2;border-radius:6px;border:1px solid #fecdd3;}
+  .pertanyaan{font-size:15px;font-weight:600;color:var(--text);margin-bottom:14px;line-height:1.6;}
+
+  /* OPTIONS */
+  .options{display:flex;flex-direction:column;gap:9px;}
+  .option-btn{display:flex;align-items:flex-start;gap:12px;padding:11px 15px;border:2px solid var(--border);border-radius:10px;background:white;cursor:pointer;font-family:inherit;font-size:13.5px;text-align:left;transition:all .18s;color:var(--text);line-height:1.5;}
+  .option-btn:hover:not(.disabled){border-color:var(--emerald2);background:#f0fdf4;}
+  .opt-label{min-width:28px;height:28px;background:var(--bg);border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;color:var(--navy);flex-shrink:0;}
+  .option-btn.selected{border-color:var(--emerald);background:#f0fdf4;}
+  .option-btn.selected .opt-label{background:var(--emerald);color:white;}
+  .option-btn.correct{border-color:var(--emerald2);background:#dcfce7;}
+  .option-btn.correct .opt-label{background:var(--emerald2);color:white;}
+  .option-btn.wrong{border-color:var(--red);background:#fee2e2;}
+  .option-btn.wrong .opt-label{background:var(--red);color:white;}
+  .option-btn.disabled{cursor:default;}
+  .option-btn.pgk-opt.selected .opt-label{background:var(--amber2);border-color:var(--amber2);color:#1a1a1a;}
+
+  /* BS TABLE */
+  .bs-table{width:100%;border-collapse:collapse;margin-top:8px;font-size:13px;}
+  .bs-table th{background:var(--navy);color:white;padding:9px 12px;font-size:11.5px;text-align:left;}
+  .bs-table th:last-child,.bs-table th:nth-last-child(2){text-align:center;width:80px;}
+  .bs-table td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:middle;}
+  .bs-table tr:nth-child(even) td{background:#f8fff8;}
+  .bs-label{width:32px;font-weight:700;color:var(--navy);}
+  .bs-radio{display:flex;align-items:center;justify-content:center;}
+  .bs-radio input[type=radio]{display:none;}
+  .bs-radio label{width:30px;height:30px;border:2px solid var(--border);border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;transition:all .18s;background:white;}
+  .bs-radio label:hover{border-color:var(--emerald);}
+  .bs-radio.benar input:checked+label{border-color:var(--emerald);background:var(--emerald);color:white;}
+  .bs-radio.salah input:checked+label{border-color:var(--red);background:var(--red);color:white;}
+  .bs-radio.setuju input:checked+label{border-color:var(--blue);background:var(--blue);color:white;}
+  .bs-radio.tidak input:checked+label{border-color:var(--amber);background:var(--amber);color:white;}
+
+  /* PEMBAHASAN */
+  .pembahasan{margin-top:18px;border-top:2px dashed var(--border);padding-top:16px;display:none;animation:fadeIn .3s ease;}
+  .pembahasan.show{display:block;}
+  .pemb-header{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.5px;text-transform:uppercase;margin-bottom:10px;}
+  .rumus-box{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:10px 14px;font-size:13px;font-weight:600;color:#065f46;margin-bottom:10px;}
+  .step{font-size:13px;color:var(--text);margin-bottom:5px;padding-left:18px;position:relative;line-height:1.6;}
+  .step::before{content:"→";position:absolute;left:0;color:var(--emerald);font-weight:700;}
+  .jawaban-final{margin-top:10px;padding:10px 14px;background:#dcfce7;border-radius:8px;font-weight:700;font-size:13.5px;color:#065f46;border:1px solid #86efac;}
+  .bs-pemb-row{border-bottom:1px solid var(--border);padding:7px 0;font-size:13px;}
+  .bs-pemb-label{font-weight:700;color:var(--navy);margin-right:6px;}
+  .bs-pemb-jawaban{display:inline-block;padding:1px 8px;border-radius:4px;font-size:10px;font-weight:700;margin-right:6px;}
+  .bs-pemb-jawaban.benar,.bs-pemb-jawaban.setuju{background:#dcfce7;color:#065f46;}
+  .bs-pemb-jawaban.salah,.bs-pemb-jawaban.tidak{background:#fee2e2;color:#991b1b;}
+
+  /* ACTIONS */
+  .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:4px;}
+  .btn{padding:11px 22px;border-radius:10px;border:none;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;transition:all .18s;display:flex;align-items:center;gap:7px;}
+  .btn-primary{background:var(--emerald);color:white;}
+  .btn-primary:hover{background:#047857;transform:translateY(-1px);}
+  .btn-outline{background:white;color:var(--navy);border:2px solid var(--border);}
+  .btn-outline:hover{border-color:var(--emerald);color:var(--emerald);}
+  .btn-accent{background:var(--amber2);color:#1a1a1a;}
+  .btn-accent:hover{background:var(--amber);}
+  .btn:disabled{opacity:.4;cursor:default;transform:none!important;}
+
+  /* RESULT */
+  #result-screen{display:none;background:var(--card);border-radius:var(--radius);padding:40px 28px;text-align:center;box-shadow:0 4px 24px rgba(0,0,0,.1);animation:fadeIn .4s ease;}
+  .result-emoji{font-size:64px;margin-bottom:12px;}
+  .result-title{font-size:28px;font-weight:800;color:var(--navy);margin-bottom:6px;}
+  .result-sub{font-size:15px;color:var(--muted);margin-bottom:28px;}
+  .score-big{font-size:72px;font-weight:800;font-family:'JetBrains Mono',monospace;color:var(--emerald);line-height:1;margin-bottom:8px;}
+  .score-label{font-size:13px;color:var(--muted);margin-bottom:28px;}
+  .stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:28px;}
+  .stat-box{padding:16px 10px;border-radius:12px;border:2px solid var(--border);}
+  .stat-box.correct-box{border-color:var(--emerald2);background:#dcfce7;}
+  .stat-box.wrong-box{border-color:var(--red);background:#fee2e2;}
+  .stat-box.skip-box{border-color:var(--border);background:#f8faff;}
+  .stat-num{font-size:28px;font-weight:800;}
+  .stat-lbl{font-size:11px;color:var(--muted);margin-top:2px;}
+  .correct-box .stat-num{color:var(--emerald);}
+  .wrong-box .stat-num{color:var(--red);}
+  .predikat{display:inline-block;padding:6px 20px;border-radius:20px;font-weight:700;font-size:14px;margin-bottom:24px;}
+
+  /* REVIEW */
+  #review-section{display:none;margin-top:24px;}
+  .review-item{background:var(--card);border-radius:12px;padding:20px;margin-bottom:14px;border-left:4px solid var(--border);box-shadow:0 1px 8px rgba(0,0,0,.05);}
+  .review-item.correct{border-left-color:var(--emerald);}
+  .review-item.wrong{border-left-color:var(--red);}
+
+  @media(max-width:600px){.soal-card{padding:18px;}.score-big{font-size:52px;}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <span class="header-badge">TKA</span>
+    <h1>Latihan Soal <span>Bahasa Indonesia SMP</span></h1>
+    <div id="timer">75:00</div>
+  </div>
+  <div class="progress-wrap">
+    <div class="progress-inner">
+      <div class="progress-info">
+        <span id="progress-text">Soal 1 dari 30</span>
+        <span id="answered-count">0 dijawab</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:3.3%"></div></div>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+  <div class="nav-card">
+    <div class="nav-title">Navigator Soal</div>
+    <div class="nav-grid" id="nav-grid"></div>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#0d1b3e;border-color:#0d1b3e"></div>Dijawab</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#059669;border-color:#059669"></div>Aktif</div>
+      <div class="legend-item"><div class="legend-dot" style="border-color:#94a3b8;border-style:dashed"></div>PG Kompleks</div>
+      <div class="legend-item"><div class="legend-dot" style="border-color:#94a3b8;border-radius:50%"></div>Benar/Salah</div>
+    </div>
+  </div>
+
+  <div id="soal-area">
+    <div class="soal-card" id="soal-card"></div>
+    <div class="actions" id="actions"></div>
+  </div>
+
+  <div id="result-screen"></div>
+  <div id="review-section"></div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+// TEKS BACAAN
+// ═══════════════════════════════════════════════════════
+const teksData = {
+  teks1: {
+    label: "Teks Bacaan untuk Soal No. 1, 2, dan 3",
+    title: "Teks Ulasan 1 & 2 – Wisata Alam",
+    isi: `<div class="teks-label">Teks Ulasan 1 – Blog Wisata</div>
+<b>Pantai Wediombo, Gunung Kidul</b><br>
+Pantai Wediombo menyimpan pesona yang jarang diketahui banyak orang. Berbeda dari pantai-pantai populer di Gunung Kidul, pantai ini menawarkan suasana yang tenang dan alami. Kolam alami yang terbentuk di antara batu-batu karang menjadi daya tarik utama. Airnya yang jernih dan tenang menjadi tempat favorit untuk berenang dengan aman, bahkan bagi anak-anak. Hamparan pasir putih membentang luas, dikelilingi tebing-tebing hijau yang megah.<br><br>
+Fasilitas di sini cukup memadai. Area parkir luas, warung makan lokal, dan toilet umum tersedia. Jalan menuju pantai sudah beraspal, meskipun berkelok-kelok. Harga tiket masuk sangat terjangkau. Pantai ini cocok dikunjungi pagi hari saat ombak masih tenang. Namun, pengunjung disarankan tidak berenang terlalu jauh dari kolam alami karena ombak laut lepas cukup deras.
+<br><br>
+<div class="teks-label">Teks Ulasan 2 – Blog Anak Muda</div>
+<b>Pantai Siung, Hidden Gem Gunung Kidul!</b><br>
+Guys, kalau kalian lagi nyari pantai yang beda dari yang lain, Pantai Siung wajib masuk bucket list! Bukan cuma pantainya yang keren, tapi tebing-tebing karst yang tinggi bikin spot foto super aesthetic. Para pecinta panjat tebing pasti langsung jatuh cinta sama tempat ini karena ada ratusan jalur panjat yang udah terkenal sampai mancanegara.<br><br>
+Ombaknya emang agak ganas, jadi kalau mau renang harus hati-hati ya. Tapi buat yang suka foto-foto atau sekadar duduk santai sambil nikmatin pemandangan, surganya banget! Fasilitasnya lumayan, ada warung dan parkiran. Kalau mau dapet foto terbaik, dateng pas golden hour deh. Dijamin feed instagram kalian auto keren!`
+  },
+  teks2: {
+    label: "Teks Bacaan untuk Soal No. 4, 5, dan 6",
+    title: "Puisi – Nelayan Tua",
+    isi: `<div style="text-align:center;font-style:italic;line-height:2.2;font-size:13.5px">
+<b>Nelayan Tua</b><br><br>
+Lelaki tua di tepi dermaga<br>
+melempar jala ke lautan lebar<br>
+tangannya kasar dipahat waktu<br>
+namun matanya menyimpan cahaya<br><br>
+Ia berlayar sebelum fajar tiba<br>
+menantang angin dan gelombang dini hari<br>
+membawa ikan untuk anak-anaknya<br>
+memikul hidup di atas perahu tua<br><br>
+Badai mengancam, ia tetap melaut<br>
+bukan karena tak kenal takut<br>
+namun karena di darat menanti<br>
+istri dan anak-anak yang percaya padanya<br><br>
+Lelaki tua itu adalah lautan itu sendiri<br>
+dalam dan penuh, diam namun bergerak<br>
+memberi tanpa meminta<br>
+hidup sepenuhnya untuk orang yang dicinta<br><br>
+<small>(Puisi karya Ananda Rahayu)</small>
+</div>`
+  },
+  teks3: {
+    label: "Teks Bacaan untuk Soal No. 7, 8, dan 9",
+    title: "Teks Informatif – Komodo: Kadal Terbesar di Dunia",
+    isi: `<b>Mengenal Komodo</b><br>
+Komodo (Varanus komodoensis) adalah kadal terbesar yang masih hidup di dunia. Hewan ini hanya dapat ditemukan di beberapa pulau di Indonesia, yaitu Pulau Komodo, Rinca, Flores, Gili Motang, dan Nusa Kode. Komodo termasuk hewan yang dilindungi karena statusnya yang terancam punah.<br><br>
+<b>Ciri Fisik yang Unik</b><br>
+Komodo jantan dewasa dapat mencapai panjang 3 meter dan berat 70 kilogram. Kulitnya bersisik kasar berwarna abu-abu kecokelatan. Lidahnya yang bercabang berfungsi sebagai alat penciuman yang sangat tajam, mampu mendeteksi bau bangkai sejauh 9,5 kilometer. Giginya yang bergerigi seperti gergaji sangat efektif untuk merobek daging mangsa.<br><br>
+<b>Cara Berburu</b><br>
+Komodo adalah predator puncak. Ia berburu dengan cara mengintai, lalu menyerang mangsa secara tiba-tiba. Liur komodo mengandung lebih dari 50 jenis bakteri berbahaya. Ketika mangsa tergigit dan berhasil kabur, bakteri dalam luka akan menyebabkan infeksi yang mematikan dalam beberapa hari. Komodo kemudian mengikuti mangsa hingga mati.<br><br>
+<b>Ancaman dan Pelestarian</b><br>
+Populasi komodo terus menurun akibat perburuan liar dan hilangnya habitat. Taman Nasional Komodo telah ditetapkan sebagai Situs Warisan Dunia UNESCO sejak 1991. Pemerintah Indonesia terus berupaya melindungi spesies langka ini melalui berbagai program konservasi.`
+  },
+  teks4: {
+    label: "Teks Bacaan untuk Soal No. 10, 11, dan 12",
+    title: "Teks Prosedur – Membuat Batik Jumputan",
+    isi: `<b>Apa itu Batik Jumputan?</b><br>
+Batik jumputan adalah teknik membuat motif pada kain dengan cara mengikat bagian-bagian tertentu sebelum dicelupkan ke dalam pewarna. Teknik ini termasuk dalam metode tie-dye yang telah dikenal luas di berbagai negara. Di Indonesia, batik jumputan populer di Solo dan Palembang.<br><br>
+<b>Alat dan Bahan:</b><br>
+• Kain putih polos (katun)<br>
+• Pewarna kain (naptol atau remasol)<br>
+• Karet gelang atau tali rafia<br>
+• Biji-bijian, kerikil, atau koin (untuk membuat motif)<br>
+• Ember dan sarung tangan<br>
+• Air panas<br><br>
+<b>Langkah Pembuatan:</b><br>
+1. Siapkan kain putih dan rendam dalam air bersih selama 15 menit, lalu peras.<br>
+2. Letakkan biji-bijian atau koin di atas kain, lalu ikat dengan karet gelang pada bagian tersebut hingga kencang. Bagian yang terikat tidak akan terkena warna.<br>
+3. Larutkan pewarna kain dalam air panas sesuai petunjuk. Tambahkan garam atau soda abu untuk hasil warna yang lebih tahan lama.<br>
+4. Celupkan kain yang sudah diikat ke dalam larutan pewarna. Diamkan selama 30-60 menit agar warna meresap sempurna.<br>
+5. Angkat kain dan bilas dengan air bersih hingga air bilasan tidak berwarna lagi.<br>
+6. Buka semua ikatan dengan hati-hati. Motif batik jumputan akan terlihat pada bagian yang sebelumnya terikat.<br>
+7. Jemur kain di tempat teduh hingga kering sempurna. Hindari paparan sinar matahari langsung agar warna tidak cepat pudar.<br><br>
+<i>Sumber: Kemendikbud, Panduan Kerajinan Tangan Nusantara</i>`
+  },
+  teks5: {
+    label: "Teks Bacaan untuk Soal No. 13, 14, dan 15",
+    title: "Teks Fiksi – Surat untuk Ibu",
+    isi: `Pagi itu, Hana menemukan sebuah kotak kayu tua di loteng rumah neneknya. Di dalamnya, tersimpan puluhan surat yang terikat dengan pita merah. Hana membuka salah satu surat dengan hati-hati.<br><br>
+"Ibu yang kucinta, hari ini aku lulus ujian dengan nilai tertinggi di kelas. Namun, aku tidak bisa tersenyum sempurna karena Ibu tidak ada di sini untuk merayakannya bersamaku. Bapak bilang Ibu sedang merawat nenek di kampung. Aku mengerti, tapi hatiku terasa sepi."<br><br>
+Hana menghentikan bacaannya. Tulisan tangan itu sangat dikenalinya. Itu tulisan ibunya, saat beliau masih seusia Hana. Hana membalik amplop surat. Tertulis tahun 1985.<br><br>
+Air mata Hana mengalir perlahan. Ia baru menyadari bahwa ibunya pernah merasakan kesepian yang sama, merindukan seseorang yang dicintai di momen paling berharga. Hana menggenggam surat itu erat-erat dan berbisik, "Aku mengerti sekarang, Bu."<br><br>
+Ia pun mengambil selembar kertas dan mulai menulis surat. Bukan untuk masa lalu. Tapi untuk ibunya yang sedang ada di kamar sebelah, yang sering ia anggap remeh dalam kesibukan sehari-hari. Sudah terlalu lama ia tidak pernah benar-benar berbicara dari hati ke hati dengan ibunya.`
+  },
+  teks6: {
+    label: "Teks Bacaan untuk Soal No. 16, 17, dan 18",
+    title: "Laporan Observasi – Mangrove: Penjaga Pantai",
+    isi: `Hutan mangrove merupakan ekosistem unik yang tumbuh di wilayah peralihan antara daratan dan lautan. Di Indonesia, hutan mangrove tersebar di sepanjang pesisir Kalimantan, Sumatera, Papua, dan Jawa. Indonesia memiliki luas hutan mangrove terbesar di dunia, mencapai sekitar 3,3 juta hektar.<br><br>
+Mangrove memiliki peran ekologis yang sangat penting. Akar-akarnya yang menjulang ke atas permukaan air berfungsi sebagai filter alami yang menyaring polutan sebelum masuk ke laut. Hutan mangrove juga menjadi habitat dan tempat berkembang biak berbagai jenis ikan, udang, kepiting, dan burung. Selain itu, mangrove berperan sebagai penahan abrasi pantai dan pelindung dari gelombang tsunami.<br><br>
+Namun, kondisi hutan mangrove di Indonesia sangat memprihatinkan. Data Kementerian Lingkungan Hidup mencatat bahwa sekitar 40% hutan mangrove Indonesia dalam kondisi rusak akibat alih fungsi lahan menjadi tambak, permukiman, dan kawasan industri. Pembalakan liar juga menjadi ancaman serius.<br><br>
+Berbagai upaya pelestarian telah dilakukan. Pemerintah bersama komunitas lokal menggalakkan program penanaman kembali mangrove. Ecotourism berbasis mangrove juga dikembangkan untuk meningkatkan kesadaran masyarakat sekaligus memberdayakan ekonomi lokal. Kesadaran semua pihak sangat dibutuhkan untuk menjaga keberlangsungan ekosistem mangrove yang tak ternilai ini.<br><br>
+<i>Sumber: Kementerian Lingkungan Hidup dan Kehutanan, 2023</i>`
+  },
+  teks7: {
+    label: "Teks Bacaan untuk Soal No. 19, 20, dan 21",
+    title: "Teks Cerpen – Juara Tanpa Piala",
+    isi: `Namanya Raka. Setiap hari, ia bangun pukul empat pagi untuk berlari mengelilingi lapangan desa sebanyak sepuluh kali. Ia bermimpi menjadi pelari tercepat di kabupaten.<br><br>
+"Raka, untuk apa berlatih sekeras itu? Kamu kan bukan dari keluarga atlet," ejek teman-temannya suatu siang.<br><br>
+Raka hanya tersenyum. Ia tidak membuang energinya untuk berdebat. Energi itu lebih berharga untuk digunakan berlari.<br><br>
+Hari perlombaan tiba. Pistol berbunyi. Raka melesat bagai anak panah. Di tikungan terakhir, ia memimpin. Namun, tiba-tiba sepatunya terlepas. Ia tersandung dan jatuh. Lutut dan tangannya terluka. Para penonton menahan napas.<br><br>
+Yang mengejutkan semua orang adalah Raka tidak menyerah. Ia bangkit, memungut sepatunya, dan terus berlari meskipun kakinya perih. Ia finis di urutan ketiga. Bukan juara pertama yang ia impikan.<br><br>
+Malam itu, pelatih mendatanginya. "Raka, kamu memenangkan sesuatu yang lebih berharga dari piala emas hari ini."<br><br>
+"Apa itu, Pak?"<br><br>
+"Kepercayaan orang banyak bahwa jatuh bukan alasan untuk berhenti."<br><br>
+Raka menatap lututnya yang masih dibalut perban. Untuk pertama kalinya, ia merasa bangga bukan karena menang, tapi karena tidak menyerah.`
+  },
+  teks8: {
+    label: "Teks Bacaan untuk Soal No. 22, 23, dan 24",
+    title: "Pidato – Pentingnya Literasi Digital",
+    isi: `Yang terhormat Bapak dan Ibu Guru,<br>
+Yang saya banggakan teman-teman sekalian.<br><br>
+Assalamualaikum warahmatullahi wabarakatuh.<br><br>
+Pertama-tama, marilah kita panjatkan puji dan syukur ke hadirat Tuhan Yang Maha Esa karena atas rahmat-Nya kita dapat berkumpul di sini dalam keadaan sehat.<br><br>
+Teman-teman, kita hidup di era digital. Smartphone sudah menjadi bagian dari keseharian kita. Setiap hari, ratusan informasi mengalir deras melalui media sosial. Namun, tahukah kalian? Tidak semua informasi yang beredar di internet adalah benar.<br><br>
+Hoaks atau berita bohong kini menjadi ancaman nyata. Menurut data Kominfo, ribuan konten hoaks ditemukan setiap tahunnya. Hoaks dapat memecah belah masyarakat, menyebabkan kepanikan, bahkan mengorbankan nyawa jika menyangkut informasi kesehatan.<br><br>
+Sebagai generasi muda, kita memiliki tanggung jawab untuk menjadi pengguna digital yang cerdas. Caranya: selalu periksa sumber informasi, bandingkan dengan berita dari media terpercaya, dan jangan mudah menekan tombol "bagikan" sebelum memverifikasi kebenaran informasi tersebut.<br><br>
+Mulai dari diri sendiri, mulai dari sekarang. Jadilah bagian dari solusi, bukan bagian dari masalah.<br><br>
+Demikian pidato yang dapat saya sampaikan. Semoga bermanfaat.<br>
+Wassalamualaikum warahmatullahi wabarakatuh.`
+  },
+  teks9: {
+    label: "Teks Bacaan untuk Soal No. 25, 26, dan 27",
+    title: "Teks Eksposisi – Sampah Plastik dan Krisis Lingkungan",
+    isi: `Indonesia menghadapi krisis sampah plastik yang serius. Menurut data KLHK tahun 2022, Indonesia menghasilkan sekitar 68,5 juta ton sampah per tahun, dengan plastik menyumbang sekitar 18 persen dari total tersebut. Yang lebih mengkhawatirkan, sebagian besar sampah plastik berakhir di laut.<br><br>
+Sampah plastik di laut menimbulkan dampak yang sangat merugikan. Ribuan hewan laut seperti penyu, lumba-lumba, dan ikan paus ditemukan mati dengan perut penuh plastik. Plastik yang terfragmentasi menjadi partikel kecil disebut mikroplastik. Mikroplastik ini telah ditemukan dalam tubuh ikan-ikan yang dikonsumsi manusia, yang berarti kita turut mengonsumsi plastik tanpa disadari.<br><br>
+Pemerintah Indonesia telah mengeluarkan berbagai kebijakan untuk mengatasi masalah ini. Larangan penggunaan kantong plastik sekali pakai di sejumlah kota besar telah diberlakukan. Program bank sampah juga digalakkan di berbagai daerah. Namun, upaya ini belum cukup tanpa perubahan perilaku masyarakat.<br><br>
+Solusi terbaik dimulai dari kebiasaan sehari-hari. Membawa tas belanja sendiri, menggunakan botol minum isi ulang, dan memilah sampah sebelum dibuang adalah langkah sederhana yang dampaknya luar biasa jika dilakukan oleh jutaan orang. Kita semua adalah bagian dari masalah, dan kita semua bisa menjadi bagian dari solusi.<br><br>
+<i>Sumber: KLHK, Laporan Status Lingkungan Hidup Indonesia 2022</i>`
+  },
+  teks10: {
+    label: "Teks Bacaan untuk Soal No. 28, 29, dan 30",
+    title: "Teks Fiksi – Warung Mbok Sari",
+    isi: `Di sudut pasar Beringharjo, ada sebuah warung kecil yang selalu ramai. Warung Mbok Sari namanya. Bukan karena menunya yang mewah, tapi karena satu hal yang tidak dimiliki warung lain: Mbok Sari selalu mengingat nama setiap pelanggannya.<br><br>
+"Mas Dani, gudeg ayam kampung ya? Sama es teh," sapa Mbok Sari bahkan sebelum Dani sempat membuka mulut.<br><br>
+Dani tertawa. Sudah tiga tahun ia menjadi pelanggan setia warung itu. "Mbok Sari ingat terus pesanan saya?"<br><br>
+"Lha gimana mau lupa. Sampeyan kan pelanggan saya. Kalau saya lupa, berarti saya tidak menghargai sampeyan sebagai manusia."<br><br>
+Kalimat sederhana itu menghantam Dani lebih keras dari yang ia bayangkan. Di kantornya, ia adalah manajer yang sibuk. Ia sering lupa nama anak buahnya sendiri. Ia sering tidak memperhatikan ekspresi wajah mereka ketika melapor sesuatu.<br><br>
+Dani memandang kesibukan warung kecil itu. Mbok Sari berlalu-lalang dengan senyum yang tidak pernah habis. Mungkin inilah yang membuat warungnya bertahan puluhan tahun: bukan sekadar makanan enak, tapi rasa dihargai yang dirasakan setiap pelanggannya.<br><br>
+Dani mengambil ponselnya dan mulai mencatat nama-nama anak buahnya satu per satu, beserta hal-hal kecil yang mereka ceritakan minggu lalu.`
+  }
+};
+
+// ═══════════════════════════════════════════════════════
+// DATA SOAL
+// ═══════════════════════════════════════════════════════
+const soalData = [
+  // ─── SOAL 1-3: Teks Ulasan Pantai ───────────────────
+  {no:1,tipe:"pg",teksKey:"teks1",
+   tanya:"Kosakata yang menggambarkan suasana tenang dan keamanan pada Teks Ulasan 1 ditunjukkan pada frasa ....",
+   opsi:["kolam alami yang terbentuk","tebing-tebing hijau yang megah","ombak laut lepas cukup deras","hamparan pasir putih membentang"],
+   jawaban:"A",
+   pembahasan:["Frasa 'kolam alami yang terbentuk' menggambarkan kondisi yang tenang dan aman untuk berenang.","Frasa ini juga didukung kalimat 'airnya yang jernih dan tenang menjadi tempat favorit untuk berenang dengan aman'."],
+   jawabanFinal:"✅ Jawaban: A. kolam alami yang terbentuk"},
+
+  {no:2,tipe:"pgk",teksKey:"teks1",
+   instruksi:"Pilih semua jawaban yang BENAR! Jawaban benar lebih dari satu.",
+   tanya:"Apa saja perbedaan informasi yang ada pada kedua teks ulasan tersebut?",
+   opsi:["A. Gaya bahasa yang digunakan (formal vs nonformal)","B. Lokasi pantai yang diulas","C. Aktivitas yang bisa dilakukan pengunjung","D. Rekomendasi waktu terbaik berkunjung"],
+   jawaban:["A","B","C","D"],
+   pembahasan:["Teks 1 menggunakan bahasa formal, teks 2 menggunakan bahasa gaul/nonformal → A BENAR","Teks 1: Pantai Wediombo, Teks 2: Pantai Siung → B BENAR","Teks 1: berenang di kolam alami, Teks 2: panjat tebing dan foto → C BENAR","Teks 1: pagi hari, Teks 2: golden hour → D BENAR"],
+   jawabanFinal:"✅ Jawaban: A, B, C, D"},
+
+  {no:3,tipe:"bs",teksKey:"teks1",
+   instruksi:"Tentukan BENAR atau SALAH untuk setiap pernyataan berikut!",
+   tanya:"Berikut pernyataan tentang kedua teks ulasan tersebut:",
+   pernyataan:[
+     {label:"A",teks:"Teks 2 menggunakan gaya bahasa nonformal sehingga terasa lebih akrab.",jawaban:"Benar",pemb:"Teks 2 menggunakan kata-kata seperti 'guys', 'keren', 'aesthetic' → bahasa nonformal ✓"},
+     {label:"B",teks:"Kedua teks sama-sama merekomendasikan pantai untuk kegiatan berenang.",jawaban:"Salah",pemb:"Teks 2 tidak merekomendasikan renang karena ombak ganas ✗"},
+     {label:"C",teks:"Teks 1 menyebutkan fasilitas yang lebih lengkap dibanding Teks 2.",jawaban:"Salah",pemb:"Keduanya menyebutkan warung dan parkiran, tidak ada yang jelas lebih lengkap ✗"},
+     {label:"D",teks:"Pantai Siung memiliki daya tarik bagi pecinta panjat tebing.",jawaban:"Benar",pemb:"Teks 2 menyebutkan 'ratusan jalur panjat yang sudah terkenal sampai mancanegara' ✓"}
+   ]},
+
+  // ─── SOAL 4-6: Puisi Nelayan Tua ────────────────────
+  {no:4,tipe:"pgk",teksKey:"teks2",
+   instruksi:"Pilih semua jawaban yang BENAR! Jawaban benar lebih dari satu.",
+   tanya:"Pilihan kata mana saja yang menunjukkan kegigihan tokoh dalam puisi tersebut?",
+   opsi:["A. Berlayar sebelum fajar tiba","B. Badai mengancam, ia tetap melaut","C. Tangannya kasar dipahat waktu","D. Memberi tanpa meminta"],
+   jawaban:["A","B"],
+   pembahasan:["'Berlayar sebelum fajar tiba' → berangkat sangat pagi, menunjukkan kegigihan → A BENAR","'Badai mengancam, ia tetap melaut' → tidak menyerah pada rintangan → B BENAR","'Tangannya kasar' → menunjukkan kerja keras, bukan kegigihan langsung → C SALAH","'Memberi tanpa meminta' → menunjukkan ketulusan, bukan kegigihan → D SALAH"],
+   jawabanFinal:"✅ Jawaban: A, B"},
+
+  {no:5,tipe:"pg",teksKey:"teks2",
+   tanya:"Apa makna 'Lelaki tua itu adalah lautan itu sendiri' pada bait keempat puisi tersebut?",
+   opsi:["Tokoh adalah seorang pelaut yang hidup di lautan","Tokoh memiliki sifat dalam dan mulia seperti lautan","Tokoh takut pada lautan namun tetap berlayar","Tokoh menjadikan lautan sebagai sumber penghasilannya"],
+   jawaban:"B",
+   pembahasan:["Lautan dilambangkan sebagai sesuatu yang 'dalam dan penuh, diam namun bergerak'.","Majas metafora ini menggambarkan sifat tokoh yang dalam hatinya penuh kasih, diam namun terus berjuang untuk keluarga.","Bukan makna literal (benar-benar lautan), tapi makna simbolis tentang karakter tokoh."],
+   jawabanFinal:"✅ Jawaban: B"},
+
+  {no:6,tipe:"bs",teksKey:"teks2",
+   instruksi:"Tentukan BENAR atau SALAH untuk setiap pernyataan berikut!",
+   tanya:"Tiga murid berpendapat tentang puisi 'Nelayan Tua':\nArya: Puisi ini menggambarkan kerja keras seorang ayah demi keluarganya.\nBela: Menurutku puisi ini menceritakan tentang betapa bahayanya pekerjaan nelayan.\nCia: Pesan utama puisi ini adalah pengorbanan tanpa pamrih yang dilakukan tokoh.\nManakah pendapat yang tepat menggambarkan isi puisi?",
+   pernyataan:[
+     {label:"A",teks:"Pendapat Arya tepat karena puisi menceritakan nelayan yang berjuang untuk keluarganya.",jawaban:"Benar",pemb:"Bait 2 dan 3 jelas menyebutkan 'membawa ikan untuk anak-anaknya' dan 'di darat menanti istri dan anak-anak' ✓"},
+     {label:"B",teks:"Pendapat Bela tepat karena puisi berfokus pada bahaya pekerjaan nelayan.",jawaban:"Salah",pemb:"Bahaya hanya disebutkan sekilas. Fokus utama adalah pengorbanan dan kasih sayang ✗"},
+     {label:"C",teks:"Pendapat Cia tepat karena puisi mengandung pesan pengorbanan tulus.",jawaban:"Benar",pemb:"'Memberi tanpa meminta' dan 'hidup sepenuhnya untuk orang yang dicinta' mendukung pendapat Cia ✓"}
+   ]},
+
+  // ─── SOAL 7-9: Teks Komodo ──────────────────────────
+  {no:7,tipe:"pgk",teksKey:"teks3",
+   instruksi:"Klik pada setiap pilihan jawaban benar! Jawaban benar lebih dari satu.",
+   tanya:"Apa saja kemampuan unik komodo yang disebutkan dalam teks?",
+   opsi:["A. Dapat mendeteksi bau bangkai sejauh 9,5 km","B. Dapat berlari hingga 60 km per jam","C. Memiliki liur yang mengandung bakteri berbahaya","D. Dapat hidup tanpa makan hingga sebulan"],
+   jawaban:["A","C"],
+   pembahasan:["'Lidahnya berfungsi sebagai alat penciuman yang sangat tajam, mampu mendeteksi bau bangkai sejauh 9,5 kilometer' → A BENAR","Kecepatan berlari tidak disebutkan dalam teks → B SALAH","'Liur komodo mengandung lebih dari 50 jenis bakteri berbahaya' → C BENAR","Kemampuan tidak makan tidak disebutkan dalam teks → D SALAH"],
+   jawabanFinal:"✅ Jawaban: A, C"},
+
+  {no:8,tipe:"bs",teksKey:"teks3",
+   instruksi:"Klik pada pilihan Benar atau Salah untuk setiap pernyataan!",
+   tanya:"Komodo adalah predator puncak yang unik. Pernyataan mana yang mendukung kalimat tersebut?",
+   pernyataan:[
+     {label:"A",teks:"Komodo berburu dengan cara mengintai lalu menyerang tiba-tiba.",jawaban:"Benar",pemb:"Teks menyebutkan 'berburu dengan cara mengintai, lalu menyerang mangsa secara tiba-tiba' ✓"},
+     {label:"B",teks:"Komodo hanya memangsa hewan-hewan kecil seperti tikus dan burung.",jawaban:"Salah",pemb:"Teks tidak membatasi mangsa komodo pada hewan kecil saja. Komodo bahkan mengikuti mangsa besar hingga mati ✗"},
+     {label:"C",teks:"Bakteri dalam liur komodo membantu membunuh mangsanya.",jawaban:"Benar",pemb:"'Bakteri dalam luka akan menyebabkan infeksi yang mematikan dalam beberapa hari' ✓"}
+   ]},
+
+  {no:9,tipe:"pg",teksKey:"teks3",
+   tanya:"Apa dampak yang terjadi jika habitat komodo terus berkurang?",
+   opsi:["Komodo akan beradaptasi dan berpindah ke pulau lain","Populasi komodo semakin menurun dan terancam punah","Komodo akan menjadi hewan peliharaan yang dilindungi","Pemerintah akan memindahkan komodo ke kebun binatang"],
+   jawaban:"B",
+   pembahasan:["Teks menyebutkan 'Populasi komodo terus menurun akibat perburuan liar dan hilangnya habitat'.","Jika habitat terus berkurang, ancaman kepunahan semakin besar.","Pilihan A, C, D tidak didukung informasi dalam teks."],
+   jawabanFinal:"✅ Jawaban: B"},
+
+  // ─── SOAL 10-12: Teks Prosedur Batik ────────────────
+  {no:10,tipe:"pgk",teksKey:"teks4",
+   instruksi:"Klik pada setiap pilihan jawaban benar! Jawaban benar lebih dari satu.",
+   tanya:"Benda apa saja yang digunakan sebagai pengikat untuk membuat motif dalam teks tersebut?",
+   opsi:["A. Karet gelang","B. Tali rafia","C. Jarum jahit","D. Biji-bijian dan koin"],
+   jawaban:["A","B","D"],
+   pembahasan:["'Karet gelang atau tali rafia' disebutkan sebagai alat pengikat → A & B BENAR","Jarum jahit tidak disebutkan dalam teks → C SALAH","'Biji-bijian, kerikil, atau koin' digunakan untuk membuat motif dan diikat → D BENAR"],
+   jawabanFinal:"✅ Jawaban: A, B, D"},
+
+  {no:11,tipe:"pgk",teksKey:"teks4",
+   instruksi:"Klik pada setiap pilihan jawaban benar! Jawaban benar lebih dari satu.",
+   tanya:"Kata manakah yang menunjukkan bahwa hasil batik jumputan bisa bertahan lama?",
+   opsi:["A. Meresap sempurna","B. Tahan lama","C. Tidak cepat pudar","D. Warna lebih kuat"],
+   jawaban:["B","C"],
+   pembahasan:["'Untuk hasil warna yang lebih tahan lama' → B BENAR","'Hindari paparan sinar matahari langsung agar warna tidak cepat pudar' → C BENAR","'Meresap sempurna' menunjukkan proses, bukan ketahanan → A SALAH","'Warna lebih kuat' tidak disebutkan dalam teks → D SALAH"],
+   jawabanFinal:"✅ Jawaban: B, C"},
+
+  {no:12,tipe:"pg",teksKey:"teks4",
+   tanya:"Apa yang mungkin terjadi jika kain tidak direndam air sebelum dicelup ke pewarna?",
+   opsi:["Kain akan menjadi lebih kaku dan sulit diikat","Warna tidak akan meresap secara merata ke seluruh kain","Kain akan sobek saat diangkat dari pewarna","Motif yang dihasilkan akan menjadi lebih besar dari biasanya"],
+   jawaban:"B",
+   pembahasan:["Merendam kain sebelumnya bertujuan agar serat kain terbuka sehingga pewarna lebih mudah meresap.","Jika dilewati, kemungkinan besar warna tidak meresap merata, menghasilkan motif yang tidak sempurna."],
+   jawabanFinal:"✅ Jawaban: B"},
+
+  // ─── SOAL 13-15: Teks Fiksi Surat ───────────────────
+  {no:13,tipe:"pg",teksKey:"teks5",
+   tanya:"Mengapa Hana menghentikan bacaannya dan menangis setelah membaca surat tersebut?",
+   opsi:["Ia tidak mengenal pengirim surat tersebut","Ia menyadari bahwa surat itu ditulis oleh ibunya saat muda","Ia sedih karena isi surat tersebut sangat menyedihkan","Ia terkejut menemukan kotak kayu tersembunyi di loteng"],
+   jawaban:"B",
+   pembahasan:["'Hana mengenali tulisan tangan ibunya saat beliau masih seusia Hana'","Menyadari bahwa ibunya pernah merasakan kesepian yang sama membuat Hana tersentuh dan menangis."],
+   jawabanFinal:"✅ Jawaban: B"},
+
+  {no:14,tipe:"bs",teksKey:"teks5",
+   instruksi:"Klik pada pilihan Benar atau Salah untuk setiap pernyataan berdasarkan isi teks!",
+   tanya:"Sikap Hana setelah membaca surat ibunya:",
+   pernyataan:[
+     {label:"A",teks:"Hana merasa bersalah karena sering mengabaikan ibunya.",jawaban:"Benar",pemb:"'Sudah terlalu lama ia tidak pernah benar-benar berbicara dari hati ke hati dengan ibunya' → tersirat rasa bersalah ✓"},
+     {label:"B",teks:"Hana memutuskan untuk menyimpan surat itu dan tidak menceritakannya kepada siapa pun.",jawaban:"Salah",pemb:"Hana justru menulis surat untuk ibunya yang ada di kamar sebelah → tidak sesuai ✗"},
+     {label:"C",teks:"Hana terinspirasi untuk memperbaiki hubungannya dengan ibunya.",jawaban:"Benar",pemb:"'Ia mengambil selembar kertas dan mulai menulis surat untuk ibunya' → tindakan memperbaiki hubungan ✓"}
+   ]},
+
+  {no:15,tipe:"pgk",teksKey:"teks5",
+   instruksi:"Klik pada setiap pilihan jawaban benar! Jawaban benar lebih dari satu.",
+   tanya:"Mengapa penulis memilih untuk menyimpan surat lama sebagai pemicu perubahan Hana?",
+   opsi:["A. Untuk menunjukkan bahwa perasaan rindu bersifat universal lintas generasi","B. Untuk membuktikan bahwa tulisan tangan lebih bermakna dari pesan digital","C. Untuk menggambarkan bahwa orang tua pernah muda dan merasakan hal serupa","D. Untuk menunjukkan bahwa loteng adalah tempat menyimpan kenangan"],
+   jawaban:["A","C"],
+   pembahasan:["Surat lama menunjukkan ibunya pernah merasakan kesepian yang sama → A & C BENAR","Teks tidak membandingkan tulisan tangan dengan pesan digital → B SALAH","Loteng hanya sebagai latar, bukan tema utama → D SALAH"],
+   jawabanFinal:"✅ Jawaban: A, C"},
+
+  // ─── SOAL 16-18: Teks Mangrove ──────────────────────
+  {no:16,tipe:"pg",teksKey:"teks6",
+   tanya:"Istilah 'abrasi' dalam paragraf kedua bermakna ...",
+   opsi:["Pengikisan pantai oleh air laut","Pencemaran air oleh polutan industri","Penebangan pohon secara liar di pesisir","Pendangkalan sungai akibat sedimentasi"],
+   jawaban:"A",
+   pembahasan:["Konteks kalimat: 'mangrove berperan sebagai penahan abrasi pantai'.","Abrasi adalah pengikisan tanah atau pantai oleh tenaga air laut atau sungai."],
+   jawabanFinal:"✅ Jawaban: A"},
+
+  {no:17,tipe:"pg",teksKey:"teks6",
+   tanya:"Kerangka yang tepat berdasarkan informasi dalam teks adalah ...",
+   opsi:[
+     "A. Pengertian Mangrove → Peran Ekologis → Kondisi Mangrove → Upaya Pelestarian",
+     "B. Peran Ekologis → Pengertian Mangrove → Ancaman → Solusi",
+     "C. Pengertian Mangrove → Ancaman → Peran Ekologis → Upaya Pelestarian",
+     "D. Kondisi Mangrove → Pengertian → Upaya Pelestarian → Peran Ekologis"
+   ],
+   jawaban:"A",
+   pembahasan:["Par.1: Pengertian dan persebaran mangrove","Par.2: Peran ekologis mangrove","Par.3: Kondisi mangrove (yang memprihatinkan)","Par.4: Upaya pelestarian → Kerangka A adalah yang paling tepat"],
+   jawabanFinal:"✅ Jawaban: A"},
+
+  {no:18,tipe:"pgk",teksKey:"teks6",
+   instruksi:"Klik pada setiap pilihan jawaban benar! Jawaban benar lebih dari satu.",
+   tanya:"Paragraf 2 membahas peran ekologis mangrove. Bagaimana hubungan isi paragraf 2 dengan paragraf 3?",
+   opsi:["A. Paragraf 3 menunjukkan ancaman yang bertentangan dengan peran positif di paragraf 2","B. Paragraf 3 merupakan kelanjutan penjelasan fungsi mangrove","C. Kerusakan mangrove di paragraf 3 berarti hilangnya manfaat yang disebutkan di paragraf 2","D. Paragraf 2 dan 3 sama-sama membahas upaya pelestarian mangrove"],
+   jawaban:["A","C"],
+   pembahasan:["Par.2 menjelaskan manfaat, par.3 menjelaskan kerusakan → kontras/pertentangan → A BENAR","Jika mangrove rusak, manfaatnya seperti filter alami dan penahan abrasi juga hilang → C BENAR","Par.3 bukan kelanjutan fungsi, tapi menunjukkan ancaman → B SALAH","Par.2 tidak membahas pelestarian → D SALAH"],
+   jawabanFinal:"✅ Jawaban: A, C"},
+
+  // ─── SOAL 19-21: Cerpen Juara ────────────────────────
+  {no:19,tipe:"pg",teksKey:"teks7",
+   tanya:"Siapa yang mengejek Raka sebelum hari perlombaan?",
+   opsi:["Pelatihnya di lapangan","Teman-temannya di sekolah","Keluarganya di rumah","Peserta lomba lainnya"],
+   jawaban:"B",
+   pembahasan:["'Raka, untuk apa berlatih sekeras itu? Kamu kan bukan dari keluarga atlet,' ejek teman-temannya suatu siang."],
+   jawabanFinal:"✅ Jawaban: B"},
+
+  {no:20,tipe:"pgk",teksKey:"teks7",
+   instruksi:"Klik pada setiap pilihan jawaban benar! Jawaban benar lebih dari satu.",
+   tanya:"Bagaimana sifat Raka yang ditunjukkan dalam cerita tersebut?",
+   opsi:["A. Pantang menyerah","B. Optimis dan percaya diri","C. Pemarah dan keras kepala","D. Disiplin dan pekerja keras"],
+   jawaban:["A","B","D"],
+   pembahasan:["Raka bangkit setelah jatuh dan terus berlari → A BENAR","Raka tidak merespons ejekan dan tetap fokus pada tujuannya → B BENAR","Raka tidak menunjukkan sifat pemarah → C SALAH","Raka bangun pukul 4 pagi setiap hari untuk berlatih → D BENAR"],
+   jawabanFinal:"✅ Jawaban: A, B, D"},
+
+  {no:21,tipe:"bs",teksKey:"teks7",
+   instruksi:"Klik pada pilihan Benar atau Salah untuk setiap pernyataan berikut!",
+   tanya:"Apa yang mungkin terjadi jika Raka menyerah setelah jatuh di perlombaan?",
+   pernyataan:[
+     {label:"A",teks:"Raka tidak akan mendapat pelajaran berharga dari pelatihnya.",jawaban:"Benar",pemb:"Pelatih datang justru karena terkesan Raka tidak menyerah. Jika menyerah, momentum tersebut tidak akan terjadi ✓"},
+     {label:"B",teks:"Raka tetap akan dianggap juara oleh semua orang.",jawaban:"Salah",pemb:"Pelatih berkata 'kamu memenangkan kepercayaan orang' justru karena Raka tidak menyerah ✗"},
+     {label:"C",teks:"Raka tidak akan merasakan kebanggaan yang disebutkan di akhir cerita.",jawaban:"Benar",pemb:"Kebanggaan Raka datang dari 'tidak menyerah', bukan dari menang. Jika ia menyerah, kebanggaan itu tidak ada ✓"}
+   ]},
+
+  // ─── SOAL 22-24: Pidato ──────────────────────────────
+  {no:22,tipe:"pgk",teksKey:"teks8",
+   instruksi:"Klik pada setiap pilihan jawaban benar! Jawaban benar lebih dari satu.",
+   tanya:"Kepada siapakah pidato tersebut ditujukan?",
+   opsi:["A. Murid-murid","B. Bapak dan Ibu Guru","C. Orang tua siswa","D. Masyarakat umum"],
+   jawaban:["A","B"],
+   pembahasan:["Pembuka pidato menyebutkan 'Yang terhormat Bapak dan Ibu Guru' → B BENAR","'Yang saya banggakan teman-teman sekalian' → ditujukan kepada murid → A BENAR","Orang tua dan masyarakat umum tidak disebutkan → C & D SALAH"],
+   jawabanFinal:"✅ Jawaban: A, B"},
+
+  {no:23,tipe:"bs",teksKey:"teks8",
+   instruksi:"Klik pada pilihan Benar atau Salah untuk setiap pernyataan berdasarkan isi teks!",
+   tanya:"Pesan apa yang ingin disampaikan melalui pidato tersebut?",
+   pernyataan:[
+     {label:"A",teks:"Pentingnya memverifikasi informasi sebelum menyebarkannya.",jawaban:"Benar",pemb:"'Jangan mudah menekan tombol bagikan sebelum memverifikasi kebenaran informasi' ✓"},
+     {label:"B",teks:"Larangan menggunakan media sosial bagi pelajar.",jawaban:"Salah",pemb:"Pidato tidak melarang penggunaan media sosial, justru mengajak penggunaan yang bijak ✗"},
+     {label:"C",teks:"Tanggung jawab generasi muda sebagai pengguna digital yang cerdas.",jawaban:"Benar",pemb:"'Sebagai generasi muda, kita memiliki tanggung jawab untuk menjadi pengguna digital yang cerdas' ✓"}
+   ]},
+
+  {no:24,tipe:"pg",teksKey:"teks8",
+   tanya:"Judul pidato tersebut masih sangat umum. Judul mana yang lebih sesuai untuk menggantikannya?",
+   opsi:["A. Bahaya Hoaks di Kalangan Pelajar","B. Cara Menggunakan Smartphone yang Benar","C. Literasi Digital: Tanggung Jawab Generasi Muda","D. Media Sosial dan Dampaknya bagi Remaja"],
+   jawaban:"C",
+   pembahasan:["Pidato membahas pentingnya literasi digital dan tanggung jawab generasi muda.","Judul C mencakup dua tema utama: literasi digital dan tanggung jawab generasi muda.","Judul A terlalu sempit (hanya hoaks), B terlalu teknis, D terlalu luas."],
+   jawabanFinal:"✅ Jawaban: C"},
+
+  // ─── SOAL 25-27: Teks Eksposisi Plastik ─────────────
+  {no:25,tipe:"pg",teksKey:"teks9",
+   tanya:"Contoh solusi yang bersifat individual yang disebutkan dalam teks adalah ....",
+   opsi:["Memberlakukan larangan kantong plastik di kota besar","Menggalakkan program bank sampah di berbagai daerah","Membawa tas belanja sendiri dan menggunakan botol isi ulang","Membuat kebijakan pemerintah tentang pengurangan plastik"],
+   jawaban:"C",
+   pembahasan:["'Membawa tas belanja sendiri, menggunakan botol minum isi ulang, dan memilah sampah' adalah langkah yang bisa dilakukan individu sehari-hari.","Pilihan A, B, D adalah kebijakan/program yang dilakukan pemerintah atau komunitas, bukan individu."],
+   jawabanFinal:"✅ Jawaban: C"},
+
+  {no:26,tipe:"pgk",teksKey:"teks9",
+   instruksi:"Klik pada setiap pilihan jawaban benar! Jawaban benar lebih dari satu.",
+   tanya:"Apa saja dampak sampah plastik yang disebutkan dalam teks?",
+   opsi:["A. Hewan laut mati dengan perut penuh plastik","B. Manusia secara tidak sadar mengonsumsi mikroplastik","C. Menurunnya pendapatan nelayan akibat berkurangnya ikan","D. Plastik terfragmentasi menjadi mikroplastik di laut"],
+   jawaban:["A","B","D"],
+   pembahasan:["'Ribuan hewan laut ditemukan mati dengan perut penuh plastik' → A BENAR","'Mikroplastik ditemukan dalam tubuh ikan yang dikonsumsi manusia' → B BENAR","Pendapatan nelayan tidak disebutkan dalam teks → C SALAH","'Plastik yang terfragmentasi menjadi partikel kecil disebut mikroplastik' → D BENAR"],
+   jawabanFinal:"✅ Jawaban: A, B, D"},
+
+  {no:27,tipe:"bs",teksKey:"teks9",
+   instruksi:"Klik pada pilihan Benar atau Salah untuk setiap pernyataan berdasarkan isi teks!",
+   tanya:"Pernyataan mana yang sesuai dengan isi teks?",
+   pernyataan:[
+     {label:"A",teks:"Indonesia adalah negara penghasil sampah plastik terbesar di dunia.",jawaban:"Salah",pemb:"Teks menyebutkan Indonesia 'menghasilkan 68,5 juta ton sampah', namun tidak menyatakan Indonesia terbesar di dunia ✗"},
+     {label:"B",teks:"Kebijakan pemerintah saja tidak cukup tanpa perubahan perilaku masyarakat.",jawaban:"Benar",pemb:"'Upaya ini belum cukup tanpa perubahan perilaku masyarakat' ✓"},
+     {label:"C",teks:"Plastik 18 persen dari total sampah Indonesia berakhir seluruhnya di laut.",jawaban:"Salah",pemb:"Teks menyebutkan 'sebagian besar', bukan seluruhnya ✗"}
+   ]},
+
+  // ─── SOAL 28-30: Cerpen Warung ───────────────────────
+  {no:28,tipe:"pg",teksKey:"teks10",
+   tanya:"Istilah 'berlalu-lalang' pada paragraf terakhir digunakan untuk menggambarkan ....",
+   opsi:["Mbok Sari yang sibuk melayani banyak pelanggan","Pelanggan yang keluar masuk warung","Kesibukan pasar Beringharjo yang ramai","Aktivitas Dani yang sibuk di kantornya"],
+   jawaban:"A",
+   pembahasan:["Kalimat lengkap: 'Mbok Sari berlalu-lalang dengan senyum yang tidak pernah habis.'","Kata 'berlalu-lalang' menggambarkan Mbok Sari yang terus bergerak melayani pelanggan."],
+   jawabanFinal:"✅ Jawaban: A"},
+
+  {no:29,tipe:"pgk",teksKey:"teks10",
+   instruksi:"Klik pada setiap pilihan jawaban benar! Jawaban benar lebih dari satu.",
+   tanya:"Setelah membaca teks tersebut, Dani berpendapat: 'Kesuksesan usaha tidak hanya ditentukan oleh kualitas produk, tapi juga oleh cara kita menghargai orang lain.' Informasi apa yang mendukung pendapat Dani tersebut?",
+   opsi:["A. Warung Mbok Sari selalu ramai meskipun menunya tidak mewah","B. Mbok Sari mengingat nama dan pesanan setiap pelanggannya","C. Warung Mbok Sari berada di sudut pasar Beringharjo","D. Mbok Sari memiliki senyum yang tidak pernah habis"],
+   jawaban:["A","B","D"],
+   pembahasan:["Ramai meski tidak mewah → kualitas bukan satu-satunya faktor → A BENAR","Mengingat nama pelanggan = menghargai mereka sebagai manusia → B BENAR","Lokasi di sudut pasar tidak berkaitan dengan pendapat Dani → C SALAH","Senyum yang tidak habis = pelayanan yang hangat = menghargai orang lain → D BENAR"],
+   jawabanFinal:"✅ Jawaban: A, B, D"},
+
+  {no:30,tipe:"bs",teksKey:"teks10",
+   instruksi:"Klik pada pilihan Benar atau Salah untuk setiap pernyataan berdasarkan isi teks!",
+   tanya:"Apa yang mungkin terjadi jika Dani tidak mengunjungi warung Mbok Sari hari itu?",
+   pernyataan:[
+     {label:"A",teks:"Dani tidak akan menyadari bahwa ia kurang memperhatikan anak buahnya.",jawaban:"Benar",pemb:"Pertemuan dengan Mbok Sari yang mengingat nama pelanggan memicu Dani tersadar → tanpa pertemuan itu, kemungkinan besar ia tidak tersadar ✓"},
+     {label:"B",teks:"Dani akan tetap mencatat nama-nama anak buahnya karena ia manajer yang baik.",jawaban:"Salah",pemb:"Teks menunjukkan Dani 'sering lupa nama anak buahnya sendiri' sebelum pertemuan ini ✗"},
+     {label:"C",teks:"Warung Mbok Sari tetap akan ramai tanpa kehadiran Dani.",jawaban:"Benar",pemb:"Warung Mbok Sari sudah ramai bertahun-tahun, tidak bergantung pada satu pelanggan ✓"}
+   ]}
+];
+
+// ═══════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════
+let current = 0;
+let answers = new Array(soalData.length).fill(null);
+let submitted = false;
+let timeLeft = 75 * 60;
+let timerInterval;
+
+// ═══════════════════════════════════════════════════════
+// TIMER
+// ═══════════════════════════════════════════════════════
+function startTimer() {
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    const m = String(Math.floor(timeLeft/60)).padStart(2,'0');
+    const s = String(timeLeft%60).padStart(2,'0');
+    document.getElementById('timer').textContent = `${m}:${s}`;
+    if(timeLeft <= 300) document.getElementById('timer').classList.add('urgent');
+    if(timeLeft <= 0) { clearInterval(timerInterval); submitAll(); }
+  }, 1000);
+}
+
+// ═══════════════════════════════════════════════════════
+// NAVIGATOR
+// ═══════════════════════════════════════════════════════
+function buildNavigator() {
+  const grid = document.getElementById('nav-grid');
+  let html = '';
+  soalData.forEach((s,i) => {
+    const cls = s.tipe==='pgk'?'pgk':s.tipe==='bs'?'bs-type':'';
+    html += `<button class="nav-btn ${cls}" id="nav-${i}" onclick="goTo(${i})">${i+1}</button>`;
+  });
+  grid.innerHTML = html;
+}
+
+function updateNavigator() {
+  const done = answers.filter(a=>a!==null).length;
+  document.getElementById('progress-text').textContent = `Soal ${current+1} dari ${soalData.length}`;
+  document.getElementById('answered-count').textContent = `${done} dijawab`;
+  const pct = ((current+1)/soalData.length)*100;
+  document.getElementById('progress-fill').style.width = pct+'%';
+  soalData.forEach((_,i) => {
+    const btn = document.getElementById(`nav-${i}`);
+    btn.classList.remove('answered','active');
+    if(i===current) btn.classList.add('active');
+    else if(answers[i]!==null) btn.classList.add('answered');
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+// RENDER SOAL
+// ═══════════════════════════════════════════════════════
+function goTo(idx) {
+  current = idx;
+  renderSoal();
+  updateNavigator();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function renderSoal() {
+  const s = soalData[current];
+  const card = document.getElementById('soal-card');
+  const teks = teksData[s.teksKey];
+  const tipeBadge = {pg:'🔵 PG Biasa',pgk:'🟡 PG Kompleks',bs:'🟢 Benar/Salah',ss:'🟣 Setuju/Tidak'};
+  const tipeClass = {pg:'tipe-pg',pgk:'tipe-pgk',bs:'tipe-bs',ss:'tipe-ss'};
+
+  let html = `<div class="soal-meta">
+    <span class="soal-num">No. ${s.no}</span>
+    <span class="tipe-badge ${tipeClass[s.tipe]}">${tipeBadge[s.tipe]}</span>
+  </div>`;
+
+  // Teks Bacaan
+  if(teks) {
+    html += `<div class="teks-box">
+      <div style="font-size:10px;color:#059669;font-weight:700;margin-bottom:6px">${teks.label}</div>
+      ${teks.isi}
+    </div>`;
+  }
+
+  if(s.instruksi) html += `<div class="instruksi">⚠️ ${s.instruksi}</div>`;
+  if(s.tanya) html += `<div class="pertanyaan">${s.tanya.replace(/\n/g,'<br>')}</div>`;
+
+  if(s.tipe==='pg') {
+    const labels=['A','B','C','D'];
+    html += `<div class="options">`;
+    s.opsi.forEach((o,i) => {
+      const lbl=labels[i], sel=answers[current]===lbl;
+      html += `<button class="option-btn ${sel?'selected':''} ${submitted?'disabled':''}" onclick="selectPG('${lbl}')">
+        <span class="opt-label">${lbl}</span><span>${o}</span></button>`;
+    });
+    html += `</div>`;
+  } else if(s.tipe==='pgk') {
+    const labels=['A','B','C','D'];
+    const curAns=answers[current]||[];
+    html += `<div class="options">`;
+    s.opsi.forEach((o,i) => {
+      const lbl=labels[i], sel=curAns.includes(lbl);
+      html += `<button class="option-btn pgk-opt ${sel?'selected':''} ${submitted?'disabled':''}" onclick="selectPGK('${lbl}')">
+        <span class="opt-label">${sel?'✓':lbl}</span><span>${o}</span></button>`;
+    });
+    html += `</div>`;
+  } else if(s.tipe==='bs') {
+    const curAns=answers[current]||{};
+    const col2 = s.pernyataan[0]?.jawaban==='Setuju'?'Setuju':'Benar';
+    const col3 = col2==='Setuju'?'Tidak Setuju':'Salah';
+    html += `<table class="bs-table"><thead><tr><th>#</th><th>Pernyataan</th><th>${col2}</th><th>${col3}</th></tr></thead><tbody>`;
+    s.pernyataan.forEach(p => {
+      const v=curAns[p.label]||'';
+      const dis=submitted?'disabled':'';
+      const r1cls=col2==='Setuju'?'setuju':'benar';
+      const r2cls=col3==='Tidak Setuju'?'tidak':'salah';
+      html += `<tr><td class="bs-label">${p.label}</td>
+        <td>${p.teks}</td>
+        <td><div class="bs-radio ${r1cls}"><input type="radio" name="bs-${current}-${p.label}" id="bs-${p.label}-B" value="${col2}" ${v===col2?'checked':''} ${dis} onchange="selectBS('${p.label}','${col2}')"><label for="bs-${p.label}-B">✓</label></div></td>
+        <td><div class="bs-radio ${r2cls}"><input type="radio" name="bs-${current}-${p.label}" id="bs-${p.label}-S" value="${col3}" ${v===col3?'checked':''} ${dis} onchange="selectBS('${p.label}','${col3}')"><label for="bs-${p.label}-S">✗</label></div></td>
+      </tr>`;
+    });
+    html += `</tbody></table>`;
+  }
+
+  if(submitted) html += renderPembahasan(s);
+  card.innerHTML = html;
+
+  const actions = document.getElementById('actions');
+  let actHtml = '';
+  if(!submitted) {
+    actHtml += `<button class="btn btn-outline" onclick="goTo(${Math.max(0,current-1)})" ${current===0?'disabled':''}>← Sebelumnya</button>`;
+    actHtml += `<button class="btn btn-primary" onclick="goTo(${Math.min(soalData.length-1,current+1)})" ${current===soalData.length-1?'disabled':''}>Selanjutnya →</button>`;
+    actHtml += `<button class="btn btn-accent" onclick="confirmSubmit()" style="margin-left:auto">🏁 Kumpulkan</button>`;
+  } else {
+    actHtml += `<button class="btn btn-outline" onclick="goTo(${Math.max(0,current-1)})" ${current===0?'disabled':''}>← Sebelumnya</button>`;
+    actHtml += `<button class="btn btn-primary" onclick="goTo(${Math.min(soalData.length-1,current+1)})" ${current===soalData.length-1?'disabled':''}>Selanjutnya →</button>`;
+  }
+  actions.innerHTML = actHtml;
+}
+
+function renderPembahasan(s) {
+  let html = `<div class="pembahasan show"><div class="pemb-header">💡 Pembahasan</div>`;
+  if(s.tipe!=='bs') {
+    if(s.pembahasan) s.pembahasan.forEach(l => { html += `<div class="step">${l}</div>`; });
+    if(s.jawabanFinal) html += `<div class="jawaban-final">${s.jawabanFinal}</div>`;
+  } else {
+    s.pernyataan.forEach(p => {
+      const jwb = p.jawaban.toLowerCase();
+      const cls = (jwb==='benar'||jwb==='setuju') ? 'benar' : 'salah';
+      html += `<div class="bs-pemb-row"><span class="bs-pemb-label">${p.label}.</span><span class="bs-pemb-jawaban ${cls}">${p.jawaban.toUpperCase()}</span>${p.pemb}</div>`;
+    });
+  }
+  html += `</div>`;
+  return html;
+}
+
+// ═══════════════════════════════════════════════════════
+// ANSWER SELECTION
+// ═══════════════════════════════════════════════════════
+function selectPG(lbl) {
+  if(submitted) return;
+  answers[current] = lbl;
+  updateNavigator(); renderSoal();
+}
+function selectPGK(lbl) {
+  if(submitted) return;
+  if(!answers[current]) answers[current] = [];
+  const arr = answers[current];
+  const idx = arr.indexOf(lbl);
+  if(idx>-1) arr.splice(idx,1); else arr.push(lbl);
+  if(arr.length===0) answers[current]=null;
+  updateNavigator(); renderSoal();
+}
+function selectBS(pLabel, val) {
+  if(submitted) return;
+  if(!answers[current]) answers[current]={};
+  answers[current][pLabel] = val;
+  updateNavigator();
+}
+
+// ═══════════════════════════════════════════════════════
+// SUBMIT & SCORE
+// ═══════════════════════════════════════════════════════
+function confirmSubmit() {
+  const done = answers.filter(a=>a!==null).length;
+  const unanswered = soalData.length - done;
+  if(unanswered>0 && !confirm(`Masih ada ${unanswered} soal yang belum dijawab.\nYakin ingin mengumpulkan?`)) return;
+  submitAll();
+}
+
+function calculateScore() {
+  let correct=0;
+  soalData.forEach((s,i) => {
+    const a=answers[i];
+    if(!a) return;
+    if(s.tipe==='pg') { if(a===s.jawaban) correct++; }
+    else if(s.tipe==='pgk') {
+      const sorted=arr=>[...arr].sort().join(',');
+      if(a && sorted(a)===sorted(s.jawaban)) correct++;
+    } else if(s.tipe==='bs') {
+      if(a && s.pernyataan.every(p=>a[p.label]===p.jawaban)) correct++;
+    }
+  });
+  return {correct, wrong:soalData.length-correct-answers.filter(a=>a===null).length, skip:answers.filter(a=>a===null).length};
+}
+
+function submitAll() {
+  clearInterval(timerInterval);
+  submitted = true;
+  document.getElementById('soal-area').style.display='none';
+  document.getElementById('nav-grid').parentElement.style.display='none';
+
+  const {correct,wrong,skip} = calculateScore();
+  const score = Math.round((correct/soalData.length)*100);
+
+  let emoji,predikat,pc;
+  if(score>=90){emoji='🏆';predikat='Luar Biasa!';pc='#065f46';}
+  else if(score>=75){emoji='🌟';predikat='Sangat Bagus!';pc='#1d4ed8';}
+  else if(score>=60){emoji='👍';predikat='Cukup Baik';pc='#b45309';}
+  else if(score>=40){emoji='📚';predikat='Perlu Belajar Lagi';pc='#dc2626';}
+  else{emoji='💪';predikat='Jangan Menyerah!';pc='#7c3aed';}
+
+  const rs = document.getElementById('result-screen');
+  rs.style.display='block';
+  rs.innerHTML = `
+    <div class="result-emoji">${emoji}</div>
+    <div class="result-title">Latihan Selesai!</div>
+    <div class="result-sub">TKA Bahasa Indonesia SMP – 30 Soal</div>
+    <div class="score-big">${score}</div>
+    <div class="score-label">dari 100 poin</div>
+    <span class="predikat" style="background:${pc}20;color:${pc};border:2px solid ${pc}40">${predikat}</span>
+    <div class="stats-grid">
+      <div class="stat-box correct-box"><div class="stat-num">${correct}</div><div class="stat-lbl">✅ Benar</div></div>
+      <div class="stat-box wrong-box"><div class="stat-num">${wrong}</div><div class="stat-lbl">❌ Salah</div></div>
+      <div class="stat-box skip-box"><div class="stat-num">${skip}</div><div class="stat-lbl">⏭ Dilewati</div></div>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+      <button class="btn btn-primary" onclick="showReview()">📋 Lihat Pembahasan</button>
+      <button class="btn btn-accent" onclick="location.reload()">🔄 Coba Lagi</button>
+    </div>`;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function showReview() {
+  const rev = document.getElementById('review-section');
+  rev.style.display='block';
+  let html=`<h2 style="font-size:18px;font-weight:800;color:var(--navy);margin-bottom:16px">📋 Review Pembahasan Lengkap</h2>`;
+  soalData.forEach((s,i) => {
+    const a=answers[i];
+    let status='skip';
+    if(a) {
+      if(s.tipe==='pg') status=a===s.jawaban?'correct':'wrong';
+      else if(s.tipe==='pgk'){const sorted=arr=>[...arr].sort().join(',');status=(a&&sorted(a)===sorted(s.jawaban))?'correct':'wrong';}
+      else if(s.tipe==='bs') status=(a&&s.pernyataan.every(p=>a[p.label]===p.jawaban))?'correct':'wrong';
+    }
+    const tipeBadge={pg:'PG Biasa',pgk:'PG Kompleks',bs:'Benar/Salah'};
+    html+=`<div class="review-item ${status}">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+        <span class="soal-num">No. ${s.no}</span>
+        <span class="tipe-badge tipe-${s.tipe}" style="font-size:10px">${tipeBadge[s.tipe]}</span>
+        <span style="margin-left:auto;font-size:12px;font-weight:700;color:${status==='correct'?'var(--emerald)':status==='wrong'?'var(--red)':'var(--muted)'}">
+          ${status==='correct'?'✅ Benar':status==='wrong'?'❌ Salah':'⏭ Dilewati'}</span>
+      </div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:8px">${s.tanya?s.tanya.replace(/\n/g,'<br>'):''}</div>
+      ${renderPembahasan(s)}
+    </div>`;
+  });
+  rev.innerHTML=html;
+  rev.scrollIntoView({behavior:'smooth'});
+}
+
+// ═══════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════
+buildNavigator();
+updateNavigator();
+renderSoal();
+startTimer();
+</script>
+</body>
+</html>
